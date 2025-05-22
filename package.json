@@ -1,0 +1,27 @@
+{
+  "name": "controle-financeiro",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "chart.js": "^4.0.0",
+    "pinia": "^2.0.0",
+    "vue": "^3.5.13",
+    "vue-chartjs": "^5.0.0",
+    "vue-router": "^4.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "@vitejs/plugin-vue": "^5.2.3",
+    "autoprefixer": "^10.4.16",
+    "daisyui": "^3.9.4",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^3.3.5",
+    "vite": "^6.3.5"
+  }
+}
