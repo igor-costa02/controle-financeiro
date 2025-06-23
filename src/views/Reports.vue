@@ -75,53 +75,43 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="card" style="min-height: 400px;">
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Evolução no Período</h3>
-        <div class="relative" style="height: 300px; width: 100%;">
+        <div class="chart-fixed">
           <Line 
             :data="lineChartData" 
             :options="lineChartOptions" 
-            style="max-height: 300px;"
           />
         </div>
       </div>
       <div class="card" style="min-height: 400px;">
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Distribuição por Categoria</h3>
-        <div class="relative" style="height: 300px; width: 100%;">
+        <div class="chart-fixed">
           <Doughnut 
             :data="doughnutChartData" 
             :options="doughnutChartOptions"
-            style="max-height: 300px;"
           />
         </div>
       </div>
     </div>
 
     <!-- Análise por Categoria -->
-    <div class="card">
+    <div class="card" style="overflow-x:auto;">
       <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Análise por Categoria</h3>
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <table class="table">
           <thead>
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Categoria</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">% do Total</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Média Mensal</th>
+              <th>Categoria</th>
+              <th>Total</th>
+              <th>% do Total</th>
+              <th>Média Mensal</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody>
             <tr v-for="(stats, category) in categoryStats" :key="category">
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                {{ category }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                R$ {{ stats.total.toFixed(2) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                {{ stats.percentage.toFixed(2) }}%
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                R$ {{ stats.average.toFixed(2) }}
-              </td>
+              <td>{{ category }}</td>
+              <td>{{ stats.total.toFixed(2) }}</td>
+              <td>{{ stats.percentage.toFixed(2) }}%</td>
+              <td>{{ stats.average.toFixed(2) }}</td>
             </tr>
           </tbody>
         </table>

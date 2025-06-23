@@ -49,6 +49,13 @@ body {
   background-color: var(--gray-50);
   color: var(--gray-900);
   line-height: 1.5;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+#app {
+  min-height: 100vh;
+  background: var(--gray-50);
 }
 
 .container {
@@ -95,16 +102,17 @@ body {
 }
 
 .card {
+  min-height: 100px;
   background-color: white;
   border-radius: 1rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
-  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.2s;
 }
 
 .card:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10);
 }
 
 .grid {
@@ -134,59 +142,41 @@ body {
   color: #EF4444;
 }
 
-.btn {
+.btn, .btn-primary {
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: 500;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.btn-primary {
-  background-color: var(--primary);
+  background: var(--primary);
   color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
 }
 
-.btn-primary:hover {
-  background-color: #2563eb;
-  transform: translateY(-1px);
+.btn:hover, .btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
 }
 
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-.input {
+.input, select.input {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--gray-200);
   border-radius: 0.5rem;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  background-color: white;
+  font-size: 1rem;
+  background: white;
+  margin-bottom: 0.5rem;
 }
 
 .input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .input:disabled {
   background-color: var(--gray-100);
   cursor: not-allowed;
-}
-
-select.input {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
-  padding-right: 2.5rem;
 }
 
 /* Tema escuro para inputs */
@@ -220,19 +210,19 @@ body.dark label {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.table th, .table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--gray-200);
 }
 
 .table th {
-  font-weight: 500;
-  text-align: left;
-  padding: 1rem;
-  background-color: var(--gray-50);
-  border-bottom: 1px solid var(--gray-200);
-}
-
-.table td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-100);
+  font-weight: 600;
 }
 
 .table tr:last-child td {
@@ -261,17 +251,12 @@ body.dark .text-danger {
 }
 
 /* Estilos para os gráficos */
-.chart-container {
+.chart-fixed {
   position: relative;
   width: 100%;
-  min-height: 300px;
-  max-height: 400px;
-  margin: 0 auto;
-}
-
-.chart-container canvas {
-  max-width: 100%;
-  height: 100% !important;
+  height: 300px;
+  overflow: hidden;
+  margin-bottom: 1rem;
 }
 
 /* Ajustes para modo escuro nos gráficos */
@@ -300,4 +285,14 @@ body.dark .nav-link {
 
 body.dark .brand {
   color: var(--primary);
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+/* Responsividade extra */
+@media (max-width: 600px) {
+  .card { padding: 1rem; }
+  .table th, .table td { padding: 0.5rem; }
 } 

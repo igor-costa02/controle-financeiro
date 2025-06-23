@@ -1,29 +1,52 @@
-# controle financeiro
+# Controle Financeiro
 
-This template should help get you started developing with Vue 3 in Vite.
+Aplicação web para controle financeiro pessoal desenvolvida com Vue.js 3 e outras tecnologias modernas.
 
-## Recommended IDE Setup
+## Funcionalidades
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- Dashboard com visão geral das finanças
+- Registro de entradas e saídas
+- Categorização de transações
+- Relatórios com gráficos
+- Cotações de moedas em tempo real
+- Exportação de dados para CSV
+- Tema claro/escuro
+- Interface responsiva
 
-## Customize configuration
+## Tecnologias Utilizadas
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- Vue.js 3 (Composition API)
+- Pinia para gerenciamento de estado
+- Vue Router para navegação
+- Chart.js para gráficos
+- Vite como bundler
+- PWA (Progressive Web App)
 
-## Project Setup
+## Como Executar
 
-```sh
+1. Clone o repositório
+```bash
+git clone [URL_DO_REPOSITÓRIO]
+```
+
+2. Instale as dependências
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
-
-```sh
+3. Execute o servidor de desenvolvimento
+```bash
 npm run dev
 ```
 
-### Compile and Minify for Production
+4. Acesse a aplicação em `http://localhost:5173`
 
-```sh
+## Build para Produção
+
+Para gerar a versão de produção:
+
+```bash
 npm run build
 ```
+
+Os arquivos serão gerados na pasta `dist`.

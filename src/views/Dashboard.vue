@@ -32,26 +32,27 @@
     </div>
 
     <!-- Cotações -->
-    <div class="card" v-if="!isLoading">
+    <div class="card">
       <h3 class="text-lg font-medium mb-4">Cotações</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div v-if="isLoading" class="text-gray-500 py-4">Carregando cotações...</div>
+      <div v-else-if="error" class="text-danger py-4">{{ error }}</div>
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="flex items-center space-x-4">
           <div class="p-3 bg-blue-100 rounded-full">
             <span class="text-blue-600 font-bold">$</span>
           </div>
           <div>
             <p class="text-sm text-gray-600">Dólar</p>
-            <p class="text-lg font-bold">R$ {{ usdRate }}</p>
+            <p class="text-lg font-bold">{{ formatCurrency(usdRate) }}</p>
           </div>
         </div>
-        
         <div class="flex items-center space-x-4">
           <div class="p-3 bg-yellow-100 rounded-full">
             <span class="text-yellow-600 font-bold">€</span>
           </div>
           <div>
             <p class="text-sm text-gray-600">Euro</p>
-            <p class="text-lg font-bold">R$ {{ eurRate }}</p>
+            <p class="text-lg font-bold">{{ formatCurrency(eurRate) }}</p>
           </div>
         </div>
       </div>
@@ -119,7 +120,7 @@
     </div>
 
     <!-- Últimas Transações -->
-    <div class="card">
+    <div class="card" style="overflow-x:auto;">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-medium">Últimas Transações</h3>
         <button @click="store.exportToCSV" class="btn">
@@ -174,7 +175,7 @@ import { useTransactionsStore } from '../stores/transactions'
 import { useCurrency } from '../composables/useCurrency'
 
 const store = useTransactionsStore()
-const { formatCurrency, usdRate, eurRate, isLoading } = useCurrency()
+const { formatCurrency, usdRate, eurRate, isLoading, error } = useCurrency()
 
 const newTransaction = ref({
   type: 'income',
