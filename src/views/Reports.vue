@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6" ref="mainRef">
     <!-- Filtros -->
     <div class="card">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -121,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useTransactionsStore } from '../stores/transactions'
 import { Line, Doughnut } from 'vue-chartjs'
 import {
@@ -135,6 +135,7 @@ import {
   Legend,
   ArcElement
 } from 'chart.js'
+import gsap from 'gsap'
 
 ChartJS.register(
   CategoryScale,
@@ -151,6 +152,7 @@ const store = useTransactionsStore()
 const period = ref('30')
 const selectedCategory = ref('')
 const type = ref('')
+const mainRef = ref(null)
 
 const filteredTransactions = computed(() => {
   const cutoffDate = new Date()
@@ -334,5 +336,9 @@ const categoryStats = computed(() => {
   })
 
   return stats
+})
+
+onMounted(() => {
+  gsap.from(mainRef.value, { opacity: 0, y: 30, duration: 0.8, ease: 'power2.out' })
 })
 </script> 

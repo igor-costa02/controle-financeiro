@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6" ref="mainRef">
     <!-- Formulário de Nova Transação -->
     <div class="card">
       <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Nova Transação</h3>
@@ -139,11 +139,34 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useTransactionsStore } from '../stores/transactions'
+import gsap from 'gsap'
 
 const store = useTransactionsStore()
 const search = ref('')
+
+const mainRef = ref(null)
+
+onMounted(async () => {
+  gsap.from(mainRef.value, { opacity: 0, y: 30, duration: 0.8, ease: 'power2.out' })
+  await nextTick()
+  const btns = mainRef.value.querySelectorAll('button')
+  btns.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      gsap.to(btn, { scale: 1.06, boxShadow: '0 4px 16px #1976d233', duration: 0.18, ease: 'power2.out' })
+    })
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, { scale: 1, boxShadow: '0 2px 8px #1976d220', duration: 0.18, ease: 'power2.in' })
+    })
+    btn.addEventListener('mousedown', () => {
+      gsap.to(btn, { scale: 0.96, duration: 0.12, ease: 'power1.in' })
+    })
+    btn.addEventListener('mouseup', () => {
+      gsap.to(btn, { scale: 1.06, duration: 0.12, ease: 'power1.out' })
+    })
+  })
+})
 
 const form = ref({
   type: 'income',

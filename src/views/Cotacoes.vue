@@ -1,5 +1,5 @@
 <template>
-  <div class="cotacoes-bar">
+  <div class="cotacoes-bar" ref="cotacoesBar">
     <div class="cotacao-item">
       <span class="cotacao-icon cotacao-usd">$</span>
       <span class="cotacao-label">Dólar</span>
@@ -19,7 +19,19 @@
 
 <script setup>
 import { useCurrency } from '../composables/useCurrency'
+import { ref, onMounted } from 'vue'
+import gsap from 'gsap'
 const { formatCurrency, usdRate, eurRate, isLoading, error } = useCurrency()
+const cotacoesBar = ref(null)
+
+onMounted(() => {
+  gsap.from(cotacoesBar.value, {
+    opacity: 0,
+    y: 20,
+    duration: 0.9,
+    ease: 'power2.out'
+  })
+})
 </script>
 
 <style scoped>
