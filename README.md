@@ -10,7 +10,6 @@ Aplicação web para controle financeiro pessoal desenvolvida com Vue.js 3 e out
 - Relatórios com gráficos
 - Cotações de moedas em tempo real
 - Exportação de dados para CSV
-- Tema claro/escuro
 - Interface responsiva
 
 ## Tecnologias Utilizadas
