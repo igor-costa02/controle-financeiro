@@ -1,39 +1,27 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import { ref, onMounted, watch } from 'vue'
-
-const isDarkMode = ref(false)
+import Cotacoes from './views/Cotacoes.vue'
 
 const routes = [
   { path: '/', name: 'Dashboard' },
-  { path: '/reports', name: 'Relatórios' }
+  { path: '/reports', name: 'Relatórios' },
+  { path: '/users', name: 'Usuários' }
 ]
-
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value
-  document.body.classList.toggle('dark')
-  localStorage.setItem('darkMode', isDarkMode.value)
-}
-
-onMounted(() => {
-  const savedDarkMode = localStorage.getItem('darkMode') === 'true'
-  isDarkMode.value = savedDarkMode
-  if (savedDarkMode) {
-    document.body.classList.add('dark')
-  }
-})
-
-watch(isDarkMode, (newValue) => {
-  document.body.classList.toggle('dark', newValue)
-})
 </script>
 
 <template>
   <header class="header-bar">
     <div class="container header-content">
       <div class="brand-area">
-        <span class="brand-icon">💸</span>
-        <h1 class="brand">Controle Financeiro</h1>
+        <span class="brand-icon">
+          <!-- Ícone SVG moderno de finanças -->
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="11" width="18" height="8" rx="2" fill="#1976D2"/>
+            <rect x="7" y="7" width="10" height="4" rx="1.5" fill="#64B5F6"/>
+            <circle cx="12" cy="15" r="2.5" fill="#fff"/>
+          </svg>
+        </span>
+        <h1 class="brand modern-font">FinanSense</h1>
       </div>
       <nav class="nav-links">
         <RouterLink 
@@ -46,22 +34,31 @@ watch(isDarkMode, (newValue) => {
           {{ route.name }}
         </RouterLink>
       </nav>
-      <button @click="toggleDarkMode" class="btn btn-theme" :title="isDarkMode ? 'Modo claro' : 'Modo escuro'">
-        <svg v-if="isDarkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
-        </svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-        </svg>
-      </button>
     </div>
   </header>
   <main class="container main-content">
     <RouterView />
   </main>
+  <footer class="footer-bar">
+    <Cotacoes />
+  </footer>
 </template>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+.modern-font {
+  font-family: 'Montserrat', 'Inter', Arial, sans-serif;
+  letter-spacing: 1px;
+}
+.footer-bar {
+  background: #F5F9FB;
+  border-top: 1px solid #BBDEFB;
+  padding: 1.2rem 0 0.5rem 0;
+  margin-top: 2rem;
+  text-align: center;
+  color: #1976D2;
+  font-size: 1rem;
+}
 .header-bar {
   background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.08);

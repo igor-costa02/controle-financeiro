@@ -31,33 +31,6 @@
       </div>
     </div>
 
-    <!-- Cotações -->
-    <div class="card">
-      <h3 class="text-lg font-medium mb-4">Cotações</h3>
-      <div v-if="isLoading" class="text-gray-500 py-4">Carregando cotações...</div>
-      <div v-else-if="error" class="text-danger py-4">{{ error }}</div>
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="flex items-center space-x-4">
-          <div class="p-3 bg-blue-100 rounded-full">
-            <span class="text-blue-600 font-bold">$</span>
-          </div>
-          <div>
-            <p class="text-sm text-gray-600">Dólar</p>
-            <p class="text-lg font-bold">{{ formatCurrency(usdRate) }}</p>
-          </div>
-        </div>
-        <div class="flex items-center space-x-4">
-          <div class="p-3 bg-yellow-100 rounded-full">
-            <span class="text-yellow-600 font-bold">€</span>
-          </div>
-          <div>
-            <p class="text-sm text-gray-600">Euro</p>
-            <p class="text-lg font-bold">{{ formatCurrency(eurRate) }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Nova Transação -->
     <div class="card">
       <h3 class="text-lg font-medium mb-4">Nova Transação</h3>
