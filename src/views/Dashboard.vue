@@ -129,7 +129,7 @@
               <td>
                 <button 
                   @click="store.removeTransaction(transaction.id)"
-                  class="text-danger hover:text-red-700"
+                  class="btn-danger"
                 >
                   Excluir
                 </button>

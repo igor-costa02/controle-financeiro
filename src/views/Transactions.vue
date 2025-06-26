@@ -137,7 +137,8 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                 <button 
                   @click="removeTransaction(transaction.id)"
-                  class="text-red-600 hover:text-red-900 dark:hover:text-red-400"
+                  class="btn-danger"
+                  ref="btnExcluir"
                 >
                   Excluir
                 </button>
@@ -167,18 +168,33 @@ onMounted(async () => {
   await nextTick()
   const btns = mainRef.value.querySelectorAll('button')
   btns.forEach(btn => {
-    btn.addEventListener('mouseenter', () => {
-      gsap.to(btn, { scale: 1.06, boxShadow: '0 4px 16px #1976d233', duration: 0.18, ease: 'power2.out' })
-    })
-    btn.addEventListener('mouseleave', () => {
-      gsap.to(btn, { scale: 1, boxShadow: '0 2px 8px #1976d220', duration: 0.18, ease: 'power2.in' })
-    })
-    btn.addEventListener('mousedown', () => {
-      gsap.to(btn, { scale: 0.96, duration: 0.12, ease: 'power1.in' })
-    })
-    btn.addEventListener('mouseup', () => {
-      gsap.to(btn, { scale: 1.06, duration: 0.12, ease: 'power1.out' })
-    })
+    if (btn.classList.contains('btn-danger')) {
+      btn.addEventListener('mouseenter', () => {
+        gsap.to(btn, { scale: 1.06, boxShadow: '0 4px 16px #ef444433', duration: 0.18, ease: 'power2.out' })
+      })
+      btn.addEventListener('mouseleave', () => {
+        gsap.to(btn, { scale: 1, boxShadow: '0 2px 8px #ef444420', duration: 0.18, ease: 'power2.in' })
+      })
+      btn.addEventListener('mousedown', () => {
+        gsap.to(btn, { scale: 0.96, duration: 0.12, ease: 'power1.in' })
+      })
+      btn.addEventListener('mouseup', () => {
+        gsap.to(btn, { scale: 1.06, duration: 0.12, ease: 'power1.out' })
+      })
+    } else {
+      btn.addEventListener('mouseenter', () => {
+        gsap.to(btn, { scale: 1.06, boxShadow: '0 4px 16px #1976d233', duration: 0.18, ease: 'power2.out' })
+      })
+      btn.addEventListener('mouseleave', () => {
+        gsap.to(btn, { scale: 1, boxShadow: '0 2px 8px #1976d220', duration: 0.18, ease: 'power2.in' })
+      })
+      btn.addEventListener('mousedown', () => {
+        gsap.to(btn, { scale: 0.96, duration: 0.12, ease: 'power1.in' })
+      })
+      btn.addEventListener('mouseup', () => {
+        gsap.to(btn, { scale: 1.06, duration: 0.12, ease: 'power1.out' })
+      })
+    }
   })
 })
 

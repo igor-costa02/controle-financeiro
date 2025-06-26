@@ -16,6 +16,7 @@ const cursorRef = ref(null)
 const brandTitle = ref(null)
 const switchRef = ref(null)
 const switchCircleRef = ref(null)
+const brandIcon = ref(null)
 
 function setDarkClass(val) {
   const html = document.documentElement
@@ -114,6 +115,23 @@ onMounted(async () => {
       { opacity: 1, y: 0, duration: 1, ease: 'power3.out', delay: 0.2 }
     )
   }
+  if (brandIcon.value) {
+    // Animação bounce ao entrar
+    gsap.fromTo(
+      brandIcon.value,
+      { y: -60, scale: 0.7, opacity: 0 },
+      { y: 0, scale: 1, opacity: 1, duration: 1, ease: 'bounce.out', delay: 0.1 }
+    )
+    // Animação de "respiração" contínua
+    gsap.to(brandIcon.value, {
+      scale: 1.08,
+      duration: 1.2,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut',
+      delay: 1.2
+    })
+  }
 })
 </script>
 
@@ -121,12 +139,17 @@ onMounted(async () => {
   <header class="header-bar">
     <div class="container header-content">
       <div class="brand-area">
-        <span class="brand-icon brand-anim">
-          <!-- Ícone SVG moderno de finanças -->
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="11" width="18" height="8" rx="2" :fill="isDark ? '#0D47A1' : '#1976D2'"/>
-            <rect x="7" y="7" width="10" height="4" rx="1.5" :fill="isDark ? '#64B5F6' : '#64B5F6'"/>
-            <circle cx="12" cy="15" r="2.5" :fill="isDark ? '#222' : '#fff'"/>
+        <span class="brand-icon brand-anim" ref="brandIcon">
+          <!-- Cifrão SVG estilizado -->
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+            <defs>
+              <linearGradient :id="isDark ? 'cifrao-dark' : 'cifrao-light'" x1="0" y1="0" x2="0" y2="44" gradientUnits="userSpaceOnUse">
+                <stop :stop-color="isDark ? '#4FC3F7' : '#1976D2'" />
+                <stop offset="1" :stop-color="isDark ? '#1976D2' : '#00E5FF'" />
+              </linearGradient>
+            </defs>
+            <path d="M22 6V38" :stroke="`url(#${isDark ? 'cifrao-dark' : 'cifrao-light'})`" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M32 14C32 9.02944 27.5228 5 22 5C16.4772 5 12 9.02944 12 14C12 18.9706 16.4772 23 22 23C27.5228 23 32 27.0294 32 32C32 36.9706 27.5228 41 22 41C16.4772 41 12 36.9706 12 32" :stroke="`url(#${isDark ? 'cifrao-dark' : 'cifrao-light'})`" stroke-width="3.2" stroke-linecap="round"/>
           </svg>
         </span>
         <h1 ref="brandTitle" class="logo-finansense">FINANSENSE</h1>
@@ -153,7 +176,6 @@ onMounted(async () => {
   <footer class="footer-bar">
     <Cotacoes />
   </footer>
-  <div ref="cursorRef" class="cursor-gsap"></div>
 </template>
 
 <style>
@@ -240,11 +262,18 @@ body, .main-content, .container, .card, .table, .nav-link, .footer-bar, .input, 
 .btn-theme:hover {
   background: rgba(255,255,255,0.15);
 }
+@media (max-width: 900px) {
+  .container { padding: 0 0.5rem; }
+  .header-content { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+  .brand-area { gap: 0.3rem; }
+  .brand-icon { height: 1.7em !important; min-width: 1.7em !important; }
+  .logo-finansense { font-size: 1.5rem !important; letter-spacing: 0.18em; }
+}
 @media (max-width: 600px) {
-  .header-content { flex-direction: column; gap: 0.5rem; }
-  .brand { font-size: 1.1rem; }
-  .nav-links { gap: 0.5rem; }
-  .logo-finansense { font-size: 1.3rem; letter-spacing: 0.2em; }
+  .header-content { flex-direction: column; gap: 0.3rem; align-items: flex-start; }
+  .brand-area { gap: 0.2rem; }
+  .brand-icon { height: 1.2em !important; min-width: 1.2em !important; }
+  .logo-finansense { font-size: 1.1rem !important; letter-spacing: 0.12em; }
 }
 .logo-finansense {
   font-family: 'Poppins', Arial, sans-serif;

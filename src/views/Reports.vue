@@ -109,9 +109,9 @@
           <tbody>
             <tr v-for="(stats, category) in categoryStats" :key="category">
               <td>{{ category }}</td>
-              <td>{{ stats.total.toFixed(2) }}</td>
+              <td>{{ formatCurrency(stats.total) }}</td>
               <td>{{ stats.percentage.toFixed(2) }}%</td>
-              <td>{{ stats.average.toFixed(2) }}</td>
+              <td>{{ formatCurrency(stats.average) }}</td>
             </tr>
           </tbody>
         </table>
@@ -121,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useTransactionsStore } from '../stores/transactions'
 import { Line, Doughnut } from 'vue-chartjs'
 import {
@@ -136,6 +136,7 @@ import {
   ArcElement
 } from 'chart.js'
 import gsap from 'gsap'
+import { useCurrency } from '../composables/useCurrency'
 
 ChartJS.register(
   CategoryScale,
@@ -153,6 +154,70 @@ const period = ref('30')
 const selectedCategory = ref('')
 const type = ref('')
 const mainRef = ref(null)
+const isDark = ref(document.documentElement.classList.contains('dark'))
+const { formatCurrency } = useCurrency()
+
+function updateIsDark() {
+  isDark.value = document.documentElement.classList.contains('dark')
+}
+
+onMounted(() => {
+  const observer = new MutationObserver(updateIsDark)
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+  gsap.from(mainRef.value, { opacity: 0, y: 30, duration: 0.8, ease: 'power2.out' })
+})
+
+function getChartColors() {
+  return {
+    text: isDark.value ? '#e5e5e5' : '#222',
+    grid: isDark.value ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'
+  }
+}
+
+function makeChartOptions(base = {}) {
+  const colors = getChartColors()
+  return {
+    ...base,
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 0 },
+    plugins: {
+      legend: {
+        position: base.plugins?.legend?.position || 'bottom',
+        labels: {
+          padding: 10,
+          boxWidth: 10,
+          font: { size: 11 },
+          color: colors.text
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: colors.text,
+          font: { size: 11 }
+        },
+        grid: { color: colors.grid }
+      },
+      x: {
+        ticks: {
+          color: colors.text,
+          font: { size: 11 }
+        },
+        grid: { display: false }
+      }
+    }
+  }
+}
+
+const lineChartOptions = computed(() => makeChartOptions())
+const doughnutChartOptions = computed(() => makeChartOptions({
+  cutout: '60%',
+  layout: { padding: { top: 20, bottom: 20 } },
+  plugins: { legend: { position: 'right' } }
+}))
 
 const filteredTransactions = computed(() => {
   const cutoffDate = new Date()
@@ -179,74 +244,6 @@ const totalExpenses = computed(() =>
 )
 
 const balance = computed(() => totalIncomes.value - totalExpenses.value)
-
-const baseChartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  animation: {
-    duration: 0 // Desabilita animações que podem causar problemas de layout
-  },
-  plugins: {
-    legend: {
-      position: 'bottom',
-      labels: {
-        padding: 10,
-        boxWidth: 10,
-        font: {
-          size: 11
-        },
-        color: document.body.classList.contains('dark') ? '#e5e5e5' : '#374151'
-      }
-    }
-  }
-}
-
-const lineChartOptions = {
-  ...baseChartOptions,
-  scales: {
-    y: {
-      beginAtZero: true,
-      ticks: {
-        color: document.body.classList.contains('dark') ? '#e5e5e5' : '#374151',
-        font: {
-          size: 11
-        }
-      },
-      grid: {
-        color: document.body.classList.contains('dark') ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-      }
-    },
-    x: {
-      ticks: {
-        color: document.body.classList.contains('dark') ? '#e5e5e5' : '#374151',
-        font: {
-          size: 11
-        }
-      },
-      grid: {
-        display: false
-      }
-    }
-  }
-}
-
-const doughnutChartOptions = {
-  ...baseChartOptions,
-  cutout: '60%',
-  layout: {
-    padding: {
-      top: 20,
-      bottom: 20
-    }
-  },
-  plugins: {
-    ...baseChartOptions.plugins,
-    legend: {
-      ...baseChartOptions.plugins.legend,
-      position: 'right'
-    }
-  }
-}
 
 const lineChartData = computed(() => {
   const data = {}
@@ -336,9 +333,5 @@ const categoryStats = computed(() => {
   })
 
   return stats
-})
-
-onMounted(() => {
-  gsap.from(mainRef.value, { opacity: 0, y: 30, duration: 0.8, ease: 'power2.out' })
 })
 </script> 
