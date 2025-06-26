@@ -115,16 +115,16 @@
           </thead>
           <tbody>
             <tr v-for="transaction in recentTransactions" :key="transaction.id">
-              <td>{{ new Date(transaction.date).toLocaleDateString() }}</td>
+              <td>{{ transaction.data.split('-').reverse().join('/') }}</td>
               <td>
-                <span :class="transaction.type === 'income' ? 'text-success' : 'text-danger'">
-                  {{ transaction.type === 'income' ? 'Entrada' : 'Saída' }}
+                <span :class="transaction.tipo === 'income' ? 'text-success' : 'text-danger'">
+                  {{ transaction.tipo === 'income' ? 'Entrada' : 'Saída' }}
                 </span>
               </td>
-              <td>{{ transaction.category }}</td>
-              <td>{{ transaction.description }}</td>
-              <td :class="transaction.type === 'income' ? 'text-success' : 'text-danger'">
-                {{ formatCurrency(transaction.amount) }}
+              <td>{{ transaction.categoria }}</td>
+              <td>{{ transaction.descricao }}</td>
+              <td :class="transaction.tipo === 'income' ? 'text-success' : 'text-danger'">
+                {{ formatCurrency(transaction.valor) }}
               </td>
               <td>
                 <button 
@@ -219,32 +219,35 @@ const recentTransactions = computed(() => {
     .slice(0, 10)
 })
 
-const currentMonth = computed(() => {
-  const now = new Date()
-  return new Date(now.getFullYear(), now.getMonth(), 1)
-})
-
 const monthlyTransactions = computed(() => {
-  return store.transactions.filter(t => new Date(t.date) >= currentMonth.value)
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const currentMonth = now.getMonth() + 1 // Janeiro = 0
+
+  return store.transactions.filter(t => {
+    if (!t.data) return false
+    const [year, month] = t.data.split('-').map(Number)
+    return year === currentYear && month === currentMonth
+  })
 })
 
 const monthlyIncomes = computed(() => {
   return monthlyTransactions.value
-    .filter(t => t.type === 'income')
-    .reduce((acc, t) => acc + t.amount, 0)
+    .filter(t => t.tipo === 'income')
+    .reduce((acc, t) => acc + t.valor, 0)
 })
 
 const monthlyExpenses = computed(() => {
   return monthlyTransactions.value
-    .filter(t => t.type === 'expense')
-    .reduce((acc, t) => acc + t.amount, 0)
+    .filter(t => t.tipo === 'expense')
+    .reduce((acc, t) => acc + t.valor, 0)
 })
 
 const monthlyBalance = computed(() => monthlyIncomes.value - monthlyExpenses.value)
 
 const balance = computed(() => {
   return store.transactions.reduce((acc, t) => {
-    return t.type === 'income' ? acc + t.amount : acc - t.amount
+    return t.tipo === 'income' ? acc + t.valor : acc - t.valor
   }, 0)
 })
 </script> 

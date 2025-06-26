@@ -1,7 +1,7 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import Cotacoes from './views/Cotacoes.vue'
-import { onMounted, ref, nextTick } from 'vue'
+import { onMounted, ref, nextTick, watch } from 'vue'
 import gsap from 'gsap'
 
 const routes = [
@@ -14,6 +14,8 @@ const isDark = ref(false)
 const themeBtn = ref(null)
 const cursorRef = ref(null)
 const brandTitle = ref(null)
+const switchRef = ref(null)
+const switchCircleRef = ref(null)
 
 function setDarkClass(val) {
   const html = document.documentElement
@@ -24,11 +26,21 @@ function setDarkClass(val) {
   }
 }
 
-function toggleDark() {
+watch(isDark, (val) => {
+  if (!switchRef.value || !switchCircleRef.value) return
+  if (val) {
+    gsap.to(switchRef.value, { background: '#1976D2', duration: 0.3 })
+    gsap.to(switchCircleRef.value, { x: 24, background: '#232B3B', borderColor: '#232B3B', duration: 0.3 })
+  } else {
+    gsap.to(switchRef.value, { background: '#e5e7eb', duration: 0.3 })
+    gsap.to(switchCircleRef.value, { x: 0, background: '#fff', borderColor: '#4FC3F7', duration: 0.3 })
+  }
+})
+
+function toggleDarkSwitch() {
   isDark.value = !isDark.value
   setDarkClass(isDark.value)
   localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
-  gsap.fromTo('.theme-toggle-anim', { rotate: 0 }, { rotate: 360, duration: 0.5, ease: 'power2.out' })
 }
 
 function setupCursor() {
@@ -117,7 +129,7 @@ onMounted(async () => {
             <circle cx="12" cy="15" r="2.5" :fill="isDark ? '#222' : '#fff'"/>
           </svg>
         </span>
-        <h1 ref="brandTitle" class="brand poppins-title brand-anim">FinanSense</h1>
+        <h1 ref="brandTitle" class="logo-finansense">FINANSENSE</h1>
       </div>
       <nav class="nav-links">
         <RouterLink 
@@ -130,14 +142,9 @@ onMounted(async () => {
           {{ route.name }}
         </RouterLink>
       </nav>
-      <button ref="themeBtn" @click="toggleDark" class="theme-toggle-anim theme-toggle-btn ml-4 flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow transition-colors duration-200" :title="isDark ? 'Modo claro' : 'Modo escuro'">
-        <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707" />
-        </svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-        </svg>
-      </button>
+      <div class="gsap-switch ml-4" :aria-checked="isDark" role="switch" tabindex="0" @click="toggleDarkSwitch" @keydown.enter.space="toggleDarkSwitch" ref="switchRef">
+        <div class="gsap-switch-circle" ref="switchCircleRef"></div>
+      </div>
     </div>
   </header>
   <main class="container main-content">
@@ -237,5 +244,55 @@ body, .main-content, .container, .card, .table, .nav-link, .footer-bar, .input, 
   .header-content { flex-direction: column; gap: 0.5rem; }
   .brand { font-size: 1.1rem; }
   .nav-links { gap: 0.5rem; }
+  .logo-finansense { font-size: 1.3rem; letter-spacing: 0.2em; }
+}
+.logo-finansense {
+  font-family: 'Poppins', Arial, sans-serif;
+  font-weight: 800;
+  font-size: 2.5rem;
+  letter-spacing: 0.5em;
+  color: #29B6F6;
+  text-transform: uppercase;
+  text-align: center;
+  margin-left: 0.1em;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+.gsap-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+  border-radius: 34px;
+  background: #e5e7eb;
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+  outline: none;
+}
+.gsap-switch:focus {
+  box-shadow: 0 0 0 2px #4FC3F7;
+}
+.gsap-switch-circle {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #4FC3F7;
+  box-shadow: 0 1px 4px rgba(25, 118, 210, 0.10);
+  transition: background 0.3s, border 0.3s;
+}
+html.dark .gsap-switch {
+  background: #232B3B;
+}
+html.dark .gsap-switch[aria-checked="true"] {
+  background: #64B5F6;
+}
+html.dark .gsap-switch-circle {
+  border-color: #232B3B;
 }
 </style>

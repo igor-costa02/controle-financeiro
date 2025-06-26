@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-6" ref="mainRef">
+    <div v-if="usersStore.error" class="text-danger text-center text-sm mb-2">{{ usersStore.error }}</div>
     <div class="card">
       <h3 class="text-lg font-medium mb-4">Novo Usuário</h3>
       <form @submit.prevent="handleSubmit" class="space-y-4">
@@ -33,22 +34,30 @@
       <h3 class="text-lg font-medium mb-4">Usuários Cadastrados</h3>
       <div class="overflow-x-auto">
         <table class="table">
+          <colgroup>
+            <col style="width:8%">
+            <col style="width:28%">
+            <col style="width:34%">
+            <col style="width:30%">
+          </colgroup>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Nome</th>
-              <th>E-mail</th>
-              <th>Ações</th>
+              <th class="text-center">ID</th>
+              <th class="text-center">Nome</th>
+              <th class="text-center">E-mail</th>
+              <th class="text-center">Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in usersStore.users" :key="user.id">
-              <td>{{ user.id }}</td>
-              <td>{{ user.name }}</td>
-              <td>{{ user.email }}</td>
-              <td>
-                <button @click="editUser(user)" class="btn">Editar</button>
-                <button @click="deleteUser(user.id)" class="btn text-danger ml-2">Excluir</button>
+            <tr v-for="user in usersStore.users" :key="user.id" style="margin-left:40px;display:table-row;">
+              <td class="text-center">{{ user.id }}</td>
+              <td class="text-center">{{ user.nome }}</td>
+              <td class="text-center">{{ user.email }}</td>
+              <td class="text-center">
+                <div class="flex justify-center">
+                  <button @click="editUser(user)" class="btn">Editar</button>
+                  <button @click="deleteUser(user.id)" class="btn" style="margin-left: 20px;">Excluir</button>
+                </div>
               </td>
             </tr>
             <tr v-if="usersStore.users.length === 0">
@@ -102,6 +111,7 @@ const mainRef = ref(null)
 
 onMounted(async () => {
   gsap.from(mainRef.value, { opacity: 0, y: 30, duration: 0.8, ease: 'power2.out' })
+  await usersStore.fetchUsers()
   await nextTick()
   const btns = mainRef.value.querySelectorAll('button')
   btns.forEach(btn => {
@@ -120,18 +130,19 @@ onMounted(async () => {
   })
 })
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   errorMsg.value = ''
+  const payload = {
+    name: form.value.name,
+    email: form.value.email,
+    password: form.value.password
+  }
+  console.log('Enviando usuário para backend:', payload)
   try {
-    if (editId.value) {
-      usersStore.updateUser(editId.value, { ...form.value })
-      editId.value = null
-    } else {
-      usersStore.addUser({ ...form.value })
-    }
+    await usersStore.addUser(payload)
     form.value = { name: '', email: '', password: '' }
   } catch (e) {
-    errorMsg.value = e.message
+    errorMsg.value = usersStore.error || e.message
   }
 }
 
@@ -154,10 +165,11 @@ const deleteUser = (id) => {
 const loginForm = ref({ email: '', password: '' })
 const loginError = ref('')
 
-const doLogin = () => {
+const doLogin = async () => {
   loginError.value = ''
-  if (!usersStore.login(loginForm.value.email, loginForm.value.password)) {
-    loginError.value = 'E-mail ou senha inválidos.'
+  const ok = await usersStore.login(loginForm.value.email, loginForm.value.password)
+  if (!ok) {
+    loginError.value = usersStore.error || 'E-mail ou senha inválidos.'
   } else {
     loginForm.value = { email: '', password: '' }
   }

@@ -120,22 +120,33 @@ html.dark .nav-link.active, html.dark .nav-link:hover {
   border-radius: 0.5rem;
   font-weight: 500;
   background: var(--primary);
-  color: white;
+  color: #fff;
   border: none;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+  transition: background 0.2s, transform 0.1s, color 0.2s;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+  outline: none;
 }
 .btn:hover, .btn-primary:hover {
   background: var(--primary-dark);
-  transform: translateY(-2px);
+  color: #fff;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 4px 16px rgba(25, 118, 210, 0.18);
+}
+.btn:active, .btn-primary:active {
+  background: var(--primary-dark);
+  color: #fff;
+  transform: scale(0.98);
 }
 html.dark .btn, html.dark .btn-primary {
   background: #232B3B;
   color: #e3eaf7;
+  border: 1px solid #1976D2;
 }
 html.dark .btn:hover, html.dark .btn-primary:hover {
   background: #1976D2;
+  color: #fff;
+  border: 1px solid #1976D2;
 }
 
 .card {
@@ -303,7 +314,7 @@ html.dark .text-danger {
 }
 html.dark .cursor-gsap {
   border-color: #64B5F6;
-  background: rgba(100, 181, 246, 0.10);
+  background: rgba(100, 181, 246, 0.18);
 }
 .cursor-gsap.cursor-hover {
   width: 48px;

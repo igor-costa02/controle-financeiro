@@ -1,9 +1,10 @@
 <template>
   <div class="space-y-6" ref="mainRef">
+    <div v-if="store.error" class="text-danger text-center text-sm mb-2">{{ store.error }}</div>
     <!-- Formulário de Nova Transação -->
     <div class="card">
       <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Nova Transação</h3>
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form @submit.prevent="handleSubmitTransacao" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -59,6 +60,17 @@
               required
             >
           </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Data
+            </label>
+            <input 
+              type="date" 
+              v-model="form.date"
+              class="input-field"
+            >
+          </div>
         </div>
 
         <div class="flex justify-end">
@@ -107,20 +119,20 @@
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
             <tr v-for="transaction in filteredTransactions" :key="transaction.id">
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                {{ new Date(transaction.date).toLocaleDateString() }}
+                {{ transaction.data.split('-').reverse().join('/') }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                {{ transaction.type === 'income' ? 'Entrada' : 'Saída' }}
+                {{ transaction.tipo === 'income' ? 'Entrada' : 'Saída' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                {{ transaction.description }}
+                {{ transaction.descricao }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                {{ transaction.category }}
+                {{ transaction.categoria }}
               </td>
               <td :class="['px-6 py-4 whitespace-nowrap text-sm font-medium', 
-                transaction.type === 'income' ? 'text-green-600' : 'text-red-600']">
-                R$ {{ transaction.amount.toFixed(2) }}
+                transaction.tipo === 'income' ? 'text-green-600' : 'text-red-600']">
+                R$ {{ transaction.valor.toFixed(2) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                 <button 
@@ -141,15 +153,17 @@
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useTransactionsStore } from '../stores/transactions'
+import { useUsersStore } from '../stores/users'
 import gsap from 'gsap'
 
 const store = useTransactionsStore()
+const usersStore = useUsersStore()
 const search = ref('')
-
 const mainRef = ref(null)
 
 onMounted(async () => {
   gsap.from(mainRef.value, { opacity: 0, y: 30, duration: 0.8, ease: 'power2.out' })
+  await store.fetchTransactions()
   await nextTick()
   const btns = mainRef.value.querySelectorAll('button')
   btns.forEach(btn => {
@@ -172,28 +186,45 @@ const form = ref({
   type: 'income',
   category: store.categories[0],
   amount: '',
-  description: ''
+  description: '',
+  date: ''
 })
+const errorMsg = ref('')
 
-const handleSubmit = () => {
-  store.addTransaction({
+const handleSubmitTransacao = async () => {
+  errorMsg.value = ''
+  console.log('handleSubmitTransacao chamado')
+  const payload = {
+    user_id: usersStore.loggedUser?.id,
     type: form.value.type,
     category: form.value.category,
+    description: form.value.description,
     amount: parseFloat(form.value.amount),
-    description: form.value.description
-  })
-  
-  form.value = {
-    type: 'income',
-    category: store.categories[0],
-    amount: '',
-    description: ''
+    date: form.value.date || new Date().toISOString().split('T')[0]
+  }
+  console.log('Payload correto enviado para backend:', payload)
+  try {
+    await store.addTransaction(payload)
+    form.value = {
+      type: 'income',
+      category: store.categories[0],
+      amount: '',
+      description: '',
+      date: ''
+    }
+  } catch (e) {
+    errorMsg.value = store.error || e.message
   }
 }
 
-const removeTransaction = (id) => {
+const removeTransaction = async (id) => {
   if (confirm('Tem certeza que deseja excluir esta transação?')) {
-    store.removeTransaction(id)
+    errorMsg.value = ''
+    try {
+      await store.removeTransaction(id)
+    } catch (e) {
+      errorMsg.value = store.error || e.message
+    }
   }
 }
 
@@ -201,10 +232,10 @@ const filteredTransactions = computed(() => {
   return store.transactions.filter(transaction => {
     const searchLower = search.value.toLowerCase()
     return (
-      transaction.description.toLowerCase().includes(searchLower) ||
-      transaction.category.toLowerCase().includes(searchLower)
+      transaction.descricao.toLowerCase().includes(searchLower) ||
+      transaction.categoria.toLowerCase().includes(searchLower)
     )
-  }).sort((a, b) => new Date(b.date) - new Date(a.date))
+  }).sort((a, b) => new Date(b.data) - new Date(a.data))
 })
 
 const exportData = () => {

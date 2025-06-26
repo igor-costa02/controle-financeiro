@@ -159,23 +159,23 @@ const filteredTransactions = computed(() => {
   cutoffDate.setDate(cutoffDate.getDate() - parseInt(period.value))
 
   return store.transactions.filter(transaction => {
-    const matchesDate = new Date(transaction.date) >= cutoffDate
-    const matchesCategory = !selectedCategory.value || transaction.category === selectedCategory.value
-    const matchesType = !type.value || transaction.type === type.value
+    const matchesDate = new Date(transaction.data) >= cutoffDate
+    const matchesCategory = !selectedCategory.value || transaction.categoria === selectedCategory.value
+    const matchesType = !type.value || transaction.tipo === type.value
     return matchesDate && matchesCategory && matchesType
   })
 })
 
 const totalIncomes = computed(() => 
   filteredTransactions.value
-    .filter(t => t.type === 'income')
-    .reduce((acc, t) => acc + t.amount, 0)
+    .filter(t => t.tipo === 'income')
+    .reduce((acc, t) => acc + t.valor, 0)
 )
 
 const totalExpenses = computed(() => 
   filteredTransactions.value
-    .filter(t => t.type === 'expense')
-    .reduce((acc, t) => acc + t.amount, 0)
+    .filter(t => t.tipo === 'expense')
+    .reduce((acc, t) => acc + t.valor, 0)
 )
 
 const balance = computed(() => totalIncomes.value - totalExpenses.value)
@@ -251,14 +251,14 @@ const doughnutChartOptions = {
 const lineChartData = computed(() => {
   const data = {}
   filteredTransactions.value.forEach(transaction => {
-    const date = new Date(transaction.date).toLocaleDateString()
+    const date = new Date(transaction.data).toLocaleDateString()
     if (!data[date]) {
       data[date] = { income: 0, expense: 0 }
     }
-    if (transaction.type === 'income') {
-      data[date].income += transaction.amount
+    if (transaction.tipo === 'income') {
+      data[date].income += transaction.valor
     } else {
-      data[date].expense += transaction.amount
+      data[date].expense += transaction.valor
     }
   })
 
@@ -298,10 +298,10 @@ const doughnutChartData = computed(() => {
   ]
 
   filteredTransactions.value.forEach(transaction => {
-    if (!categoryData[transaction.category]) {
-      categoryData[transaction.category] = 0
+    if (!categoryData[transaction.categoria]) {
+      categoryData[transaction.categoria] = 0
     }
-    categoryData[transaction.category] += transaction.amount
+    categoryData[transaction.categoria] += transaction.valor
   })
 
   const categories = Object.keys(categoryData)
@@ -320,14 +320,14 @@ const doughnutChartData = computed(() => {
 
 const categoryStats = computed(() => {
   const stats = {}
-  const total = filteredTransactions.value.reduce((acc, t) => acc + t.amount, 0)
+  const total = filteredTransactions.value.reduce((acc, t) => acc + t.valor, 0)
   const monthsInPeriod = parseInt(period.value) / 30
 
   filteredTransactions.value.forEach(transaction => {
-    if (!stats[transaction.category]) {
-      stats[transaction.category] = { total: 0, percentage: 0, average: 0 }
+    if (!stats[transaction.categoria]) {
+      stats[transaction.categoria] = { total: 0, percentage: 0, average: 0 }
     }
-    stats[transaction.category].total += transaction.amount
+    stats[transaction.categoria].total += transaction.valor
   })
 
   Object.keys(stats).forEach(category => {

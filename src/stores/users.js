@@ -1,86 +1,94 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-const USERS_KEY = 'cf_users'
-const LOGGED_KEY = 'cf_logged_user'
-
-function loadUsers() {
-  const data = localStorage.getItem(USERS_KEY)
-  return data ? JSON.parse(data) : []
-}
-function saveUsers(users) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users))
-}
-
 export const useUsersStore = defineStore('users', () => {
-  const users = ref(loadUsers())
-  const loggedUser = ref(JSON.parse(localStorage.getItem(LOGGED_KEY) || 'null'))
+  const users = ref([])
+  const loggedUser = ref(null)
+  const error = ref(null)
 
   function validatePassword(password) {
-    // Mínimo 6 caracteres, pelo menos uma letra e um número
-    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(password)
+    if (typeof password !== 'string') return false
+    const isValid = password.length >= 6 && /[A-Za-z]/.test(password) && /[0-9]/.test(password)
+    console.log('Validando senha:', password, 'Resultado:', isValid)
+    return isValid
   }
 
-  const addUser = (user) => {
+  async function fetchUsers() {
+    try {
+      const res = await fetch('http://localhost:3001/api/usuarios')
+      users.value = await res.json()
+    } catch (e) {
+      error.value = 'Erro ao buscar usuários'
+    }
+  }
+
+  async function addUser(user) {
     if (!validatePassword(user.password)) {
       throw new Error('A senha deve ter pelo menos 6 caracteres, incluindo uma letra e um número.')
     }
-    // Gera o próximo ID baseado no maior ID atual
-    const nextId = users.value.length > 0 ? Math.max(...users.value.map(u => u.id)) + 1 : 1
-    users.value.push({
-      id: nextId,
-      ...user
-    })
-    saveUsers(users.value)
-  }
-
-  const updateUser = (id, updates) => {
-    const user = users.value.find(u => u.id === id)
-    if (user) {
-      if (updates.password && !validatePassword(updates.password)) {
-        throw new Error('A senha deve ter pelo menos 6 caracteres, incluindo uma letra e um número.')
+    try {
+      const payload = {
+        nome: user.name,
+        email: user.email,
+        senha: user.password
       }
-      Object.assign(user, updates)
-      saveUsers(users.value)
+      const res = await fetch('http://localhost:3001/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      if (!res.ok) throw new Error('Erro ao criar usuário')
+      await fetchUsers()
+    } catch (e) {
+      error.value = 'Erro ao criar usuário'
+      throw e
     }
   }
 
-  const removeUser = (id) => {
-    const index = users.value.findIndex(u => u.id === id)
-    if (index !== -1) {
-      users.value.splice(index, 1)
-      saveUsers(users.value)
-    }
-  }
-
-  const getUserById = (id) => {
-    return users.value.find(u => u.id === id)
-  }
-
-  const login = (email, password) => {
-    const user = users.value.find(u => u.email === email && u.password === password)
-    if (user) {
-      loggedUser.value = user
-      localStorage.setItem(LOGGED_KEY, JSON.stringify(user))
+  async function login(email, password) {
+    try {
+      const res = await fetch('http://localhost:3001/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha: password })
+      })
+      if (!res.ok) throw new Error('Login inválido')
+      loggedUser.value = await res.json()
       return true
+    } catch {
+      error.value = 'Login inválido'
+      return false
     }
-    return false
   }
 
-  const logout = () => {
+  function logout() {
     loggedUser.value = null
-    localStorage.removeItem(LOGGED_KEY)
+  }
+
+  const handleSubmit = async () => {
+    console.log('handleSubmit chamado');
+    const payload = {
+      usuario_id: usersStore.loggedUser?.id,
+      tipo: form.value.type,
+      categoria: form.value.category,
+      descricao: form.value.description,
+      valor: parseFloat(form.value.amount),
+      data: form.value.date || new Date().toISOString().split('T')[0]
+    }
+    console.log('Payload:', payload);
+    alert('submit!');
+    // ...restante do código
   }
 
   return {
     users,
+    loggedUser,
+    error,
+    fetchUsers,
     addUser,
-    updateUser,
-    removeUser,
-    getUserById,
-    validatePassword,
     login,
     logout,
-    loggedUser
+    validatePassword,
+    handleSubmit
   }
 }) 
